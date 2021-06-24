@@ -1,0 +1,11 @@
+# JetBrains
+.idea
+
+# Binary
+.bin/
+
+# Secrets
+.env
+
+# Database
+*.db

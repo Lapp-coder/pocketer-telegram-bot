@@ -29,6 +29,7 @@ type Errors struct {
 	InvalidURL         string `mapstructure:"invalid_url"`
 	Unauthorized       string `mapstructure:"unauthorized"`
 	FailedToSave       string `mapstructure:"failed_to_save"`
+	FailedToGet        string `mapstructure:"failed_to_get"`
 	FailedToAuthorized string `mapstructure:"failed_to_authorized"`
 	FailedToGenerate   string `mapstructure:"failed_to_generate"`
 }

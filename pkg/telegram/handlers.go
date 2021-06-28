@@ -9,6 +9,7 @@ import (
 
 const (
 	commandStart = "start"
+	commandGet   = "get"
 )
 
 func (b *Bot) handleUpdates(updates tgbotapi.UpdatesChannel) {
@@ -34,6 +35,8 @@ func (b *Bot) handleCommand(message *tgbotapi.Message) error {
 	switch message.Command() {
 	case commandStart:
 		return b.handleStartCommand(message)
+	case commandGet:
+		return b.handleGetCommand(message)
 	default:
 		return b.handleUnknownCommand(message)
 	}
@@ -49,22 +52,17 @@ func (b *Bot) handleMessage(message *tgbotapi.Message) error {
 
 	accessToken, err := b.getAccessToken(message.Chat.ID)
 	if err != nil {
+		pointerAccessToken := &accessToken
+
 		requestToken, err := b.getRequestToken(message.Chat.ID)
 		if err != nil {
 			return errUnauthorized
 		}
 
-		accessToken, err = b.userAuthentication(message.Chat.ID, requestToken)
+		*pointerAccessToken, err = b.userAuthentication(message.Chat.ID, requestToken)
 		if err != nil {
 			return errFailedToAuthorized
 		}
-
-		if err := b.pocketClient.Add(context.Background(), pocket.AddInput{AccessToken: accessToken, URL: message.Text}); err != nil {
-			return errFailedToSave
-		}
-
-		_, err = b.bot.Send(msg)
-		return err
 	}
 
 	if err := b.pocketClient.Add(context.Background(), pocket.AddInput{AccessToken: accessToken, URL: message.Text}); err != nil {
@@ -84,6 +82,42 @@ func (b *Bot) handleStartCommand(message *tgbotapi.Message) error {
 	msg := tgbotapi.NewMessage(message.Chat.ID, b.messages.Responses.AlreadyAuthorized)
 	_, err = b.bot.Send(msg)
 	return err
+}
+
+func (b *Bot) handleGetCommand(message *tgbotapi.Message) error {
+	msg := tgbotapi.NewMessage(message.Chat.ID, "")
+
+	accessToken, err := b.getAccessToken(message.Chat.ID)
+	if err != nil {
+		pointerAccessToken := &accessToken
+
+		requestToken, err := b.getRequestToken(message.Chat.ID)
+		if err != nil {
+			return errUnauthorized
+		}
+
+		*pointerAccessToken, err = b.userAuthentication(message.Chat.ID, requestToken)
+		if err != nil {
+			return errFailedToAuthorized
+		}
+	}
+
+	items, err := b.pocketClient.Retrieving(context.Background(), pocket.RetrievingInput{
+		AccessToken: accessToken,
+	})
+	if err != nil {
+		return errFailedToGet
+	}
+
+	for _, item := range items {
+		msg.Text = item.GivenUrl
+		_, err = b.bot.Send(msg)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (b *Bot) handleUnknownCommand(message *tgbotapi.Message) error {

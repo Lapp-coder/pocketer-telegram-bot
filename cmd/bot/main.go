@@ -19,7 +19,7 @@ func main() {
 
 	bot, err := tgbotapi.NewBotAPI(cfg.TelegramBotToken)
 	if err != nil {
-		log.Panic(err)
+		log.Fatal(err)
 	}
 
 	pocketClient, err := pocket.NewClient(cfg.PocketConsumerKey)
@@ -32,9 +32,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	stor := boltdb.NewTokenStorage(db)
+	tokenStorage := boltdb.NewTokenStorage(db)
 
-	telegramBot := telegram.NewBot(bot, stor, pocketClient, cfg.Messages, cfg.RedirectURL)
+	telegramBot := telegram.NewBot(bot, tokenStorage, pocketClient, cfg.Messages, cfg.RedirectURL)
 	if err = telegramBot.Start(); err != nil {
 		log.Fatalf("an error occurred when starting telegram bot: %s", err)
 	}

@@ -55,14 +55,14 @@ func NewConfig() (*Config, error) {
 		return nil, err
 	}
 
-	if err := LoadEnv(&cfg); err != nil {
+	if err := loadEnv(&cfg); err != nil {
 		return nil, err
 	}
 
 	return &cfg, nil
 }
 
-func LoadEnv(cfg *Config) error {
+func loadEnv(cfg *Config) error {
 	if err := viper.BindEnv("TELEGRAM_BOT_TOKEN"); err != nil {
 		return err
 	}

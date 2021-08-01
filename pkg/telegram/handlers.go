@@ -52,20 +52,18 @@ func (b *Bot) handleMessage(message *tgbotapi.Message) error {
 
 	accessToken, err := b.getAccessToken(message.Chat.ID)
 	if err != nil {
-		pointerAccessToken := &accessToken
-
 		requestToken, err := b.getRequestToken(message.Chat.ID)
 		if err != nil {
 			return errUnauthorized
 		}
 
-		*pointerAccessToken, err = b.userAuthentication(message.Chat.ID, requestToken)
+		accessToken, err = b.userAuthentication(message.Chat.ID, requestToken)
 		if err != nil {
 			return errFailedToAuthorized
 		}
 	}
 
-	if err := b.pocketClient.Add(context.Background(), pocket.AddInput{AccessToken: accessToken, URL: message.Text}); err != nil {
+	if err = b.pocketClient.Add(context.Background(), pocket.AddInput{AccessToken: accessToken, URL: message.Text}); err != nil {
 		return errFailedToSave
 	}
 
@@ -89,30 +87,25 @@ func (b *Bot) handleGetCommand(message *tgbotapi.Message) error {
 
 	accessToken, err := b.getAccessToken(message.Chat.ID)
 	if err != nil {
-		pointerAccessToken := &accessToken
-
 		requestToken, err := b.getRequestToken(message.Chat.ID)
 		if err != nil {
 			return errUnauthorized
 		}
 
-		*pointerAccessToken, err = b.userAuthentication(message.Chat.ID, requestToken)
+		accessToken, err = b.userAuthentication(message.Chat.ID, requestToken)
 		if err != nil {
 			return errFailedToAuthorized
 		}
 	}
 
-	items, err := b.pocketClient.Retrieving(context.Background(), pocket.RetrievingInput{
-		AccessToken: accessToken,
-	})
+	items, err := b.pocketClient.Retrieving(context.Background(), pocket.RetrievingInput{AccessToken: accessToken})
 	if err != nil {
 		return errFailedToGet
 	}
 
 	for _, item := range items {
 		msg.Text = item.GivenUrl
-		_, err = b.bot.Send(msg)
-		if err != nil {
+		if _, err = b.bot.Send(msg); err != nil {
 			return err
 		}
 	}

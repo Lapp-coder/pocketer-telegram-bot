@@ -10,7 +10,7 @@ FROM alpine:latest
 
 WORKDIR /root/
 
-COPY --from=0 /github.com/Lapp-coder/pocketer-telegram-bot/.bin/bot .
-COPY --from=0 /github.com/Lapp-coder/pocketer-telegram-bot/configs configs/
+COPY --from=builder /github.com/Lapp-coder/pocketer-telegram-bot/.bin/bot .
+COPY --from=builder /github.com/Lapp-coder/pocketer-telegram-bot/configs configs/
 
 CMD ["./bot"]

@@ -67,12 +67,12 @@ func loadEnv(cfg *Config) error {
 		return err
 	}
 
-	if err := viper.BindEnv("CONSUMER_KEY"); err != nil {
+	if err := viper.BindEnv("POCKET_CONSUMER_KEY"); err != nil {
 		return err
 	}
 
 	cfg.TelegramBotToken = viper.GetString("TELEGRAM_BOT_TOKEN")
-	cfg.PocketConsumerKey = viper.GetString("CONSUMER_KEY")
+	cfg.PocketConsumerKey = viper.GetString("POCKET_CONSUMER_KEY")
 
 	return nil
 }

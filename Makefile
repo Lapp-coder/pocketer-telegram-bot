@@ -1,14 +1,14 @@
-.PHONY: build run build-container run-container
+.PHONY: build run docker-build docker-run
 build:
 	go build -o ./.bin/bot ./cmd/bot/main.go
 
 run:
 	./.bin/bot
 
-build-container:
+docker-build:
 	docker build -t pocketer-telegram-bot .
 
-run-container:
+docker-run:
 	docker run --name pocketer-telegram-bot-container --env-file .env pocketer-telegram-bot
 
 .DEFAULT_GHOAL: build

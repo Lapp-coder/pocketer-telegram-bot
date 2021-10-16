@@ -5,7 +5,7 @@ import (
 	"github.com/Lapp-coder/pocketer-telegram-bot/internal/config"
 	"github.com/Lapp-coder/pocketer-telegram-bot/internal/storage"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
-	"log"
+	"github.com/sirupsen/logrus"
 )
 
 type Bot struct {
@@ -21,7 +21,7 @@ func NewBot(bot *tgbotapi.BotAPI, storage storage.TokenStorage, pocketClient *po
 }
 
 func (b *Bot) Start() error {
-	log.Printf("Authorized on account %s", b.bot.Self.UserName)
+	logrus.Infof("Authorized on account %s", b.bot.Self.UserName)
 
 	updates, err := b.initUpdatesChannel()
 	if err != nil {

@@ -2,9 +2,11 @@ package telegram
 
 import (
 	"context"
+	"net/url"
+
 	pocket "github.com/Lapp-coder/go-pocket-sdk"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
-	"net/url"
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -120,6 +122,10 @@ func (b *Bot) handleUnknownCommand(message *tgbotapi.Message) error {
 }
 
 func (b *Bot) handleError(chatID int64, err error) {
+	logrus.Errorf(
+		"Error occured when working bot, chatID: %d, error: %s",
+		chatID, err.Error())
+
 	msg := tgbotapi.NewMessage(chatID, b.messages.Errors.Default)
 
 	switch err {

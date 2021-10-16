@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	"github.com/sirupsen/logrus"
 
 	pocket "github.com/Lapp-coder/go-pocket-sdk"
 	"github.com/Lapp-coder/pocketer-telegram-bot/internal/config"
@@ -17,31 +17,33 @@ const (
 )
 
 func main() {
+	logrus.SetFormatter(&logrus.JSONFormatter{})
+
 	cfg, err := config.New()
 	if err != nil {
-		log.Fatal(err)
+		logrus.Fatalln(err)
 	}
 
 	bot, err := tgbotapi.NewBotAPI(cfg.TelegramBotToken)
 	if err != nil {
-		log.Fatal(err)
+		logrus.Fatalln(err)
 	}
 
 	pocketClient, err := pocket.NewClient(cfg.PocketConsumerKey)
 	if err != nil {
-		log.Fatal(err)
+		logrus.Fatalln(err)
 	}
 
 	db, err := initDB(cfg.DBPath)
 	if err != nil {
-		log.Fatal(err)
+		logrus.Fatalln(err)
 	}
 
 	tokenStorage := boltdb.NewTokenStorage(db)
 
 	telegramBot := telegram.NewBot(bot, tokenStorage, pocketClient, cfg.Messages, cfg.RedirectURL)
 	if err = telegramBot.Start(); err != nil {
-		log.Fatalf("an error occurred when starting telegram bot: %s", err)
+		logrus.Fatalf("error occurred when starting telegram bot: %s", err)
 	}
 }
 

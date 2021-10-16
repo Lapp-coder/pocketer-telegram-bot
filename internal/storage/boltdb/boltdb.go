@@ -1,9 +1,10 @@
 package boltdb
 
 import (
+	"strconv"
+
 	"github.com/Lapp-coder/pocketer-telegram-bot/internal/storage"
 	"github.com/boltdb/bolt"
-	"strconv"
 )
 
 type TokenStorage struct {

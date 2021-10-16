@@ -34,32 +34,32 @@ type Errors struct {
 	FailedToGenerate   string `mapstructure:"failed_to_generate"`
 }
 
-func NewConfig() (*Config, error) {
+func New() (Config, error) {
 	viper.AddConfigPath("configs/")
 	viper.SetConfigName("config")
 
 	if err := viper.ReadInConfig(); err != nil {
-		return nil, err
+		return Config{}, err
 	}
 
 	var cfg Config
 	if err := viper.Unmarshal(&cfg); err != nil {
-		return nil, err
+		return Config{}, err
 	}
 
 	if err := viper.UnmarshalKey("messages.responses", &cfg.Messages.Responses); err != nil {
-		return nil, err
+		return Config{}, err
 	}
 
 	if err := viper.UnmarshalKey("messages.errors", &cfg.Messages.Errors); err != nil {
-		return nil, err
+		return Config{}, err
 	}
 
 	if err := loadEnv(&cfg); err != nil {
-		return nil, err
+		return Config{}, err
 	}
 
-	return &cfg, nil
+	return cfg, nil
 }
 
 func loadEnv(cfg *Config) error {

@@ -1,18 +1,23 @@
 package main
 
 import (
+	"log"
+
 	pocket "github.com/Lapp-coder/go-pocket-sdk"
-	"github.com/Lapp-coder/pocketer-telegram-bot/pkg/config"
-	"github.com/Lapp-coder/pocketer-telegram-bot/pkg/storage"
-	"github.com/Lapp-coder/pocketer-telegram-bot/pkg/storage/boltdb"
-	"github.com/Lapp-coder/pocketer-telegram-bot/pkg/telegram"
+	"github.com/Lapp-coder/pocketer-telegram-bot/internal/config"
+	"github.com/Lapp-coder/pocketer-telegram-bot/internal/storage"
+	"github.com/Lapp-coder/pocketer-telegram-bot/internal/storage/boltdb"
+	"github.com/Lapp-coder/pocketer-telegram-bot/internal/telegram"
 	"github.com/boltdb/bolt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
-	"log"
+)
+
+const (
+	fsModeReadWriteOnly = 0600
 )
 
 func main() {
-	cfg, err := config.NewConfig()
+	cfg, err := config.New()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -27,7 +32,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	db, err := initDB(cfg)
+	db, err := initDB(cfg.DBPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -40,13 +45,13 @@ func main() {
 	}
 }
 
-func initDB(cfg *config.Config) (*bolt.DB, error) {
-	db, err := bolt.Open(cfg.DBPath, 0600, nil)
+func initDB(dbPath string) (*bolt.DB, error) {
+	db, err := bolt.Open(dbPath, fsModeReadWriteOnly, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	err = db.Update(func(tx *bolt.Tx) error {
+	if err = db.Update(func(tx *bolt.Tx) error {
 		if _, err = tx.CreateBucketIfNotExists([]byte(storage.AccessTokens)); err != nil {
 			return err
 		}
@@ -56,8 +61,7 @@ func initDB(cfg *config.Config) (*bolt.DB, error) {
 		}
 
 		return nil
-	})
-	if err != nil {
+	}); err != nil {
 		return nil, err
 	}
 

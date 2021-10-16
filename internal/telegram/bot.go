@@ -2,8 +2,8 @@ package telegram
 
 import (
 	pocket "github.com/Lapp-coder/go-pocket-sdk"
-	"github.com/Lapp-coder/pocketer-telegram-bot/pkg/config"
-	"github.com/Lapp-coder/pocketer-telegram-bot/pkg/storage"
+	"github.com/Lapp-coder/pocketer-telegram-bot/internal/config"
+	"github.com/Lapp-coder/pocketer-telegram-bot/internal/storage"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"log"
 )

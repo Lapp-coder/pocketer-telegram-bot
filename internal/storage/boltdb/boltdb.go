@@ -1,8 +1,7 @@
 package boltdb
 
 import (
-	"errors"
-	"github.com/Lapp-coder/pocketer-telegram-bot/pkg/storage"
+	"github.com/Lapp-coder/pocketer-telegram-bot/internal/storage"
 	"github.com/boltdb/bolt"
 	"strconv"
 )
@@ -22,29 +21,27 @@ func (s *TokenStorage) Save(chatID int64, token string, bucket storage.Bucket) e
 	})
 }
 func (s *TokenStorage) Get(chatID int64, bucket storage.Bucket) (string, error) {
-	var token string
+	var token []byte
 
-	err := s.db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte(bucket))
-		data := b.Get(intToBytes(chatID))
-		token = string(data)
+	if err := s.db.View(func(tx *bolt.Tx) error {
+		txBucket := tx.Bucket([]byte(bucket))
+		token = txBucket.Get(intToBytes(chatID))
 		return nil
-	})
-	if err != nil {
+	}); err != nil {
 		return "", err
 	}
 
-	if token == "" {
-		return "", errors.New("token not found")
+	if len(token) == 0 {
+		return "", errTokenNotFound
 	}
 
-	return token, nil
+	return string(token), nil
 }
 
 func (s *TokenStorage) Delete(chatID int64, bucket storage.Bucket) error {
 	return s.db.Update(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte(bucket))
-		return b.Delete(intToBytes(chatID))
+		txBucket := tx.Bucket([]byte(bucket))
+		return txBucket.Delete(intToBytes(chatID))
 	})
 }
 

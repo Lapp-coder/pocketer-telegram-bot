@@ -3,7 +3,7 @@ package telegram
 import (
 	"context"
 	"fmt"
-	"github.com/Lapp-coder/pocketer-telegram-bot/pkg/storage"
+	"github.com/Lapp-coder/pocketer-telegram-bot/internal/storage"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
@@ -54,6 +54,6 @@ func (b *Bot) generateAuthorizationLink(chatID int64) (string, error) {
 	return b.pocketClient.GetAuthorizationURL(requestToken, redirectURL)
 }
 
-func (b *Bot) generateRedirectURL() string {
+func (b Bot) generateRedirectURL() string {
 	return fmt.Sprintf("%s", b.redirectURL)
 }

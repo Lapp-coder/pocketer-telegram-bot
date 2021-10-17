@@ -1,5 +1,5 @@
 # Pocketer bot
-***
+
 [![Go](https://img.shields.io/badge/go-1.17-blue)](https://golang.org/doc/go1.17)
 [![Release](https://img.shields.io/badge/release-1.0.0-success)](https://github.com/Lapp-coder/pocketer-telegram-bot/releases)
 
@@ -7,18 +7,22 @@
 
 ***
 
-### Its functionality is as follows:
+### Features
 * Quickly saving a link to Pocket
 * Getting all saved links from Pocket
 
 
 ### Installation and running
 ***
-To install Pocketer, run to next command: \
-```$ git clone github.com/Lapp-coder/pocketer-telegram-bot```
+To install Pocketer, run to next command:
+```
+$ git clone github.com/Lapp-coder/pocketer-telegram-bot
+```
 
-After running command: \
-```$ cd pocketer-telegram-bot && touch .env```
+After running command:
+```
+$ cd pocketer-telegram-bot && touch .env
+```
 
 Next, specify the contents of the .env file in this format:
 ```dotenv
@@ -32,5 +36,7 @@ $ docker build -t pocketer-telegram-bot . && \
   docker run --name pocketer-telegram-bot --env-file .env pocketer-telegram-bot
 ```
 
-Or, if you have an installed utility "make": \
-```make docker-run```
+Or, if you have an installed utility "make":
+```
+$ make docker-run
+```

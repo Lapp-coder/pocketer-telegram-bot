@@ -12,9 +12,7 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
-const (
-	fsModeReadWriteOnly = 0600
-)
+const fsModeReadWriteOnly = 0600
 
 func main() {
 	logrus.SetFormatter(&logrus.JSONFormatter{})

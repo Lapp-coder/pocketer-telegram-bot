@@ -47,8 +47,7 @@ func (b *Bot) handleCommand(message *tgbotapi.Message) error {
 func (b *Bot) handleMessage(message *tgbotapi.Message) error {
 	msg := tgbotapi.NewMessage(message.Chat.ID, b.messages.Responses.SavedSuccessfully)
 
-	_, err := url.ParseRequestURI(message.Text)
-	if err != nil {
+	if _, err := url.ParseRequestURI(message.Text); err != nil {
 		return errInvalidURL
 	}
 

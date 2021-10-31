@@ -52,6 +52,8 @@ jobs:
             docker stop $(echo $CONTAINER_NAME)
             # Remove old container
             docker rm $(echo $CONTAINER_NAME)
+            # Remove old images
+            docker rmi $(docker images -q)
             # Set env variables
             export TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
             export POCKET_CONSUMER_KEY=${{ secrets.POCKET_CONSUMER_KEY }}

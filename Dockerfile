@@ -9,6 +9,10 @@ RUN CGO_ENABLED=0 GOOS=linux \
 
 FROM alpine:latest
 
+RUN mkdir -p /data/db && touch /data/db/bot.db
+
+VOLUME /data/db/bot.db:/root/bot.db
+
 WORKDIR /root/
 
 COPY --from=builder /github.com/Lapp-coder/pocketer-telegram-bot/.bin/bot .

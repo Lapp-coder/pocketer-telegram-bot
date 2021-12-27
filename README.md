@@ -1,8 +1,5 @@
-# Pocketer bot
-
-[![Go](https://img.shields.io/badge/go-1.17-blue)](https://golang.org/doc/go1.17)
-[![Release](https://img.shields.io/badge/release-1.0.0-success)](https://github.com/Lapp-coder/pocketer-telegram-bot/releases)
-
+# Pocketer bot [![Go](https://img.shields.io/badge/go-1.17-blue)](https://golang.org/doc/go1.17) [![Release](https://img.shields.io/badge/release-1.0.0-success)](https://github.com/Lapp-coder/pocketer-telegram-bot/releases)
+![image](images/pocketer-telegram-bot.jpeg)
 ## [Pocketer](https://t.me/PocketerBot) - a client for the [Pocket](https://getpocket.com) service in Telegram
 
 ***

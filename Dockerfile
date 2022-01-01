@@ -16,4 +16,5 @@ WORKDIR /root/
 COPY --from=builder /github.com/Lapp-coder/pocketer-telegram-bot/.bin/bot .
 COPY --from=builder /github.com/Lapp-coder/pocketer-telegram-bot/configs configs/
 
+
 CMD ["./bot"]

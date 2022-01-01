@@ -9,9 +9,7 @@ RUN CGO_ENABLED=0 GOOS=linux \
 
 FROM alpine:latest
 
-RUN mkdir -p /data/db && touch /data/db/bot.db
-
-VOLUME /data/db/bot.db:/root/bot.db
+VOLUME /var/pocketer/bot.db:/root/bot.db
 
 WORKDIR /root/
 

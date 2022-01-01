@@ -9,12 +9,9 @@ RUN CGO_ENABLED=0 GOOS=linux \
 
 FROM alpine:latest
 
-VOLUME /var/pocketer/bot.db:/root/bot.db
-
 WORKDIR /root/
 
 COPY --from=builder /github.com/Lapp-coder/pocketer-telegram-bot/.bin/bot .
 COPY --from=builder /github.com/Lapp-coder/pocketer-telegram-bot/configs configs/
-
 
 CMD ["./bot"]

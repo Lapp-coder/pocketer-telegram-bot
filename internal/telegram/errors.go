@@ -7,6 +7,7 @@ var (
 	errUnauthorized             = errors.New("user is not authorized")
 	errFailedToSave             = errors.New("failed to save")
 	errFailedToGet              = errors.New("failed to get")
+	errFailedToDelete           = errors.New("failed to delete")
 	errFailedToAuthorized       = errors.New("failed to authorize user")
 	errFailedToGenerateAuthLink = errors.New("failed to generate authorization link")
 )

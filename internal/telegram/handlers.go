@@ -2,16 +2,18 @@ package telegram
 
 import (
 	"context"
+	"fmt"
 	"net/url"
 
 	pocket "github.com/Lapp-coder/go-pocket-sdk"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
-	"github.com/sirupsen/logrus"
 )
 
 const (
-	commandStart = "start"
-	commandGet   = "get"
+	commandStart  = "start"
+	commandHelp   = "help"
+	commandGet    = "get"
+	commandDelete = "delete"
 )
 
 func (b *Bot) handleUpdates(updates tgbotapi.UpdatesChannel) {
@@ -37,37 +39,32 @@ func (b *Bot) handleCommand(message *tgbotapi.Message) error {
 	switch message.Command() {
 	case commandStart:
 		return b.handleStartCommand(message)
+	case commandHelp:
+		return b.handleHelpCommand(message)
 	case commandGet:
 		return b.handleGetCommand(message)
+	case commandDelete:
+		return b.handleDeleteCommand(message)
 	default:
 		return b.handleUnknownCommand(message)
 	}
 }
 
 func (b *Bot) handleMessage(message *tgbotapi.Message) error {
-	msg := tgbotapi.NewMessage(message.Chat.ID, b.messages.Responses.SavedSuccessfully)
-
 	if _, err := url.ParseRequestURI(message.Text); err != nil {
 		return errInvalidURL
 	}
 
-	accessToken, err := b.getAccessToken(message.Chat.ID)
+	accessToken, err := b.getAccessTokenIfAuthorized(message.Chat.ID)
 	if err != nil {
-		requestToken, err := b.getRequestToken(message.Chat.ID)
-		if err != nil {
-			return errUnauthorized
-		}
-
-		accessToken, err = b.userAuthentication(message.Chat.ID, requestToken)
-		if err != nil {
-			return errFailedToAuthorized
-		}
+		return err
 	}
 
 	if err = b.pocketClient.Add(context.Background(), pocket.AddInput{AccessToken: accessToken, URL: message.Text}); err != nil {
 		return errFailedToSave
 	}
 
+	msg := tgbotapi.NewMessage(message.Chat.ID, b.messages.Responses.SavedSuccessfully)
 	_, err = b.bot.Send(msg)
 	return err
 }
@@ -83,20 +80,18 @@ func (b *Bot) handleStartCommand(message *tgbotapi.Message) error {
 	return err
 }
 
+func (b *Bot) handleHelpCommand(message *tgbotapi.Message) error {
+	msg := tgbotapi.NewMessage(message.Chat.ID, b.messages.Responses.Help)
+	_, err := b.bot.Send(msg)
+	return err
+}
+
 func (b *Bot) handleGetCommand(message *tgbotapi.Message) error {
 	msg := tgbotapi.NewMessage(message.Chat.ID, "")
 
-	accessToken, err := b.getAccessToken(message.Chat.ID)
+	accessToken, err := b.getAccessTokenIfAuthorized(message.Chat.ID)
 	if err != nil {
-		requestToken, err := b.getRequestToken(message.Chat.ID)
-		if err != nil {
-			return errUnauthorized
-		}
-
-		accessToken, err = b.userAuthentication(message.Chat.ID, requestToken)
-		if err != nil {
-			return errFailedToAuthorized
-		}
+		return err
 	}
 
 	items, err := b.pocketClient.Retrieving(context.Background(), pocket.RetrievingInput{AccessToken: accessToken})
@@ -105,13 +100,35 @@ func (b *Bot) handleGetCommand(message *tgbotapi.Message) error {
 	}
 
 	for _, item := range items {
-		msg.Text = item.GivenUrl
-		if _, err = b.bot.Send(msg); err != nil {
-			return err
-		}
+		msg.Text = fmt.Sprintf("%s\nID: %s", item.GivenURL, item.ID)
+		b.bot.Send(msg)
 	}
 
 	return nil
+}
+
+func (b *Bot) handleDeleteCommand(message *tgbotapi.Message) error {
+	accessToken, err := b.getAccessTokenIfAuthorized(message.Chat.ID)
+	if err != nil {
+		return err
+	}
+
+	input := pocket.ModifyInput{
+		AccessToken: accessToken,
+		Actions: []pocket.Action{
+			{
+				Name:   pocket.ActionDelete,
+				ItemID: message.CommandArguments(),
+			},
+		},
+	}
+	if err = b.pocketClient.Modify(context.Background(), input); err != nil {
+		return errFailedToDelete
+	}
+
+	msg := tgbotapi.NewMessage(message.Chat.ID, b.messages.Responses.DeletedSuccessfully)
+	_, err = b.bot.Send(msg)
+	return err
 }
 
 func (b *Bot) handleUnknownCommand(message *tgbotapi.Message) error {
@@ -121,10 +138,6 @@ func (b *Bot) handleUnknownCommand(message *tgbotapi.Message) error {
 }
 
 func (b *Bot) handleError(chatID int64, err error) {
-	logrus.Errorf(
-		"Error occured when working bot, chatID: %d, error: %s",
-		chatID, err.Error())
-
 	msg := tgbotapi.NewMessage(chatID, b.messages.Errors.Default)
 
 	switch err {
@@ -136,6 +149,12 @@ func (b *Bot) handleError(chatID int64, err error) {
 		b.bot.Send(msg)
 	case errFailedToSave:
 		msg.Text = b.messages.Errors.FailedToSave
+		b.bot.Send(msg)
+	case errFailedToGet:
+		msg.Text = b.messages.Errors.FailedToGet
+		b.bot.Send(msg)
+	case errFailedToDelete:
+		msg.Text = b.messages.Errors.FailedToDelete
 		b.bot.Send(msg)
 	case errFailedToAuthorized:
 		msg.Text = b.messages.Errors.FailedToAuthorized

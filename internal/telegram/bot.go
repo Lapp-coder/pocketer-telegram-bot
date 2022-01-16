@@ -21,7 +21,7 @@ func NewBot(bot *tgbotapi.BotAPI, storage storage.TokenStorage, pocketClient *po
 }
 
 func (b *Bot) Start() error {
-	logrus.Infof("Authorized on account %s", b.bot.Self.UserName)
+	logrus.Infof("%s is started", b.bot.Self.UserName)
 
 	updates, err := b.initUpdatesChannel()
 	if err != nil {

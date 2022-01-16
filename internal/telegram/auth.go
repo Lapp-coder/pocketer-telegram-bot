@@ -8,6 +8,23 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
+func (b *Bot) getAccessTokenIfAuthorized(chatID int64) (string, error) {
+	accessToken, err := b.getAccessToken(chatID)
+	if err != nil {
+		requestToken, err := b.getRequestToken(chatID)
+		if err != nil {
+			return "", errUnauthorized
+		}
+
+		accessToken, err = b.userAuthentication(chatID, requestToken)
+		if err != nil {
+			return "", errFailedToAuthorized
+		}
+	}
+
+	return accessToken, nil
+}
+
 func (b *Bot) userAuthentication(chatID int64, requestToken string) (string, error) {
 	auth, err := b.pocketClient.Authorize(context.Background(), requestToken)
 	if err != nil {
@@ -52,7 +69,7 @@ func (b *Bot) generateAuthorizationLink(chatID int64) (string, error) {
 		return "", err
 	}
 
-	return b.pocketClient.GetAuthorizationURL(requestToken, redirectURL)
+	return b.pocketClient.GetAuthorizationURL(requestToken)
 }
 
 func (b Bot) generateRedirectURL() string {

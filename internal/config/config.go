@@ -18,10 +18,12 @@ type Messages struct {
 }
 
 type Responses struct {
-	Start             string `mapstructure:"start"`
-	AlreadyAuthorized string `mapstructure:"already_authorized"`
-	SavedSuccessfully string `mapstructure:"saved_successfully"`
-	UnknownCommand    string `mapstructure:"unknown_command"`
+	Start               string `mapstructure:"start"`
+	Help                string `mapstructure:"help"`
+	AlreadyAuthorized   string `mapstructure:"already_authorized"`
+	SavedSuccessfully   string `mapstructure:"saved_successfully"`
+	DeletedSuccessfully string `mapstructure:"deleted_successfully"`
+	UnknownCommand      string `mapstructure:"unknown_command"`
 }
 
 type Errors struct {
@@ -30,6 +32,7 @@ type Errors struct {
 	Unauthorized       string `mapstructure:"unauthorized"`
 	FailedToSave       string `mapstructure:"failed_to_save"`
 	FailedToGet        string `mapstructure:"failed_to_get"`
+	FailedToDelete     string `mapstructure:"failed_to_delete"`
 	FailedToAuthorized string `mapstructure:"failed_to_authorized"`
 	FailedToGenerate   string `mapstructure:"failed_to_generate"`
 }

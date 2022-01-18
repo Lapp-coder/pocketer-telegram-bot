@@ -101,7 +101,9 @@ func (b *Bot) handleGetCommand(message *tgbotapi.Message) error {
 
 	for _, item := range items {
 		msg.Text = fmt.Sprintf("%s\nID: %s", item.GivenURL, item.ID)
-		b.bot.Send(msg)
+		if _, err = b.bot.Send(msg); err != nil {
+			return err
+		}
 	}
 
 	return nil

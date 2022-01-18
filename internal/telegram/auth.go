@@ -58,9 +58,7 @@ func (b *Bot) getRequestToken(chatID int64) (string, error) {
 }
 
 func (b *Bot) generateAuthorizationLink(chatID int64) (string, error) {
-	redirectURL := b.generateRedirectURL()
-
-	requestToken, err := b.pocketClient.GetRequestToken(context.Background(), redirectURL, "")
+	requestToken, err := b.pocketClient.GetRequestToken(context.Background(), b.redirectURL, "")
 	if err != nil {
 		return "", err
 	}
@@ -70,8 +68,4 @@ func (b *Bot) generateAuthorizationLink(chatID int64) (string, error) {
 	}
 
 	return b.pocketClient.GetAuthorizationURL(requestToken)
-}
-
-func (b Bot) generateRedirectURL() string {
-	return fmt.Sprintf("%s", b.redirectURL)
 }
